@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skin Ritual Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --deep: #111111;
+    --card: #161616;
+    --border: #2a2a2a;
+    --crimson: #8b1a1a;
+    --crimson-bright: #c0392b;
+    --crimson-glow: rgba(139, 26, 26, 0.15);
+    --silver: #a8a8b3;
+    --silver-dim: #5a5a6a;
+    --white: #f0ede8;
+    --muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .header-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--crimson-bright);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+  header h1 em {
+    font-style: italic;
+    color: var(--silver);
+  }
+  .header-date {
+    font-size: 11px;
+    color: var(--silver-dim);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 14px 20px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+  .nav-tab.active {
+    color: var(--white);
+    border-bottom-color: var(--crimson-bright);
+  }
+  .nav-tab:hover:not(.active) { color: var(--silver); }
+
+  /* MAIN */
+  main { padding: 20px 24px 48px; max-width: 520px; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--crimson-bright);
+    margin-bottom: 12px;
+    margin-top: 28px;
+    font-weight: 500;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* RITUAL CARDS */
+  .ritual-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .ritual-card:hover { border-color: var(--silver-dim); }
+  .ritual-card.done {
+    border-color: var(--crimson);
+    background: var(--crimson-glow);
+  }
+  .ritual-card.done .ritual-name { color: var(--silver-dim); text-decoration: line-through; text-decoration-color: var(--crimson); }
+  .ritual-check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .ritual-card.done .ritual-check {
+    background: var(--crimson);
+    border-color: var(--crimson);
+  }
+  .ritual-check svg { display: none; }
+  .ritual-card.done .ritual-check svg { display: block; }
+  .ritual-content { flex: 1; }
+  .ritual-name {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--white);
+    line-height: 1.3;
+    transition: color 0.2s;
+  }
+  .ritual-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .ritual-tag {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-weight: 500;
+  }
+  .tag-face { background: rgba(139,26,26,0.3); color: #e07070; }
+  .tag-body { background: rgba(60,60,90,0.4); color: #9090c0; }
+  .tag-neck { background: rgba(40,70,40,0.4); color: #80b080; }
+
+  /* WEEKLY GRID */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .day-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    gap: 4px;
+    background: var(--card);
+  }
+  .day-cell:hover { border-color: var(--silver-dim); }
+  .day-cell.today { border-color: var(--crimson); }
+  .day-cell.selected { background: var(--crimson-glow); border-color: var(--crimson-bright); color: var(--white); }
+  .day-cell .day-name { font-size: 8px; letter-spacing: 0.1em; }
+  .day-cell .day-num { font-size: 15px; font-family: 'Cormorant Garamond', serif; font-weight: 300; color: var(--white); }
+  .day-cell .day-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--crimson-bright);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .day-cell.has-data .day-dot { opacity: 1; }
+
+  /* MASK SCHEDULE */
+  .mask-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .mask-row:last-child { border-bottom: none; }
+  .mask-day-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .mask-name {
+    font-size: 12px;
+    color: var(--white);
+    flex: 1;
+  }
+  .mask-ingredients {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* PROGRESS */
+  .progress-area {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .progress-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 8px;
+  }
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--crimson), var(--crimson-bright));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* STREAK */
+  .streak-display {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 16px 0 8px;
+  }
+  .streak-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--crimson-bright);
+    line-height: 1;
+  }
+  .streak-label {
+    font-size: 11px;
+    color: var(--silver-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* NOTES */
+  textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  textarea::placeholder { color: var(--silver-dim); }
+  textarea:focus { border-color: var(--crimson); }
+
+  /* PHOTO LOG */
+  .photo-hint {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    text-align: center;
+    color: var(--silver-dim);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+  .photo-hint strong {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--silver);
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+
+  /* SAVE BTN */
+  .save-btn {
+    background: var(--crimson);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 1px;
+    margin-top: 14px;
+    transition: background 0.2s;
+    font-weight: 500;
+  }
+  .save-btn:hover { background: var(--crimson-bright); }
+
+  /* TIMELINE CARD */
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--crimson);
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .timeline-concern { font-size: 12px; color: var(--white); font-weight: 400; }
+  .timeline-time {
+    font-size: 11px;
+    color: var(--crimson-bright);
+    margin-top: 2px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+  }
+  .timeline-note { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--crimson);
+    color: var(--white);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 10px 20px;
+    border-radius: 1px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* COMPLETION LINE */
+  .completion-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--silver-dim);
+    text-align: center;
+    padding: 10px 0 0;
+  }
+  .completion-line.complete { color: var(--crimson-bright); }
+
+  /* INGREDIENT KEY */
+  .ingredient-key {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .ingredient-key h4 {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 10px;
+  }
+  .ingredient-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(42,42,42,0.5);
+    font-size: 11px;
+  }
+  .ingredient-row:last-child { border-bottom: none; }
+  .ingredient-row .name { color: var(--white); }
+  .ingredient-row .use { color: var(--muted); font-size: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-eyebrow">The Mansi Project</span>
+  <h1>Skin <em>Ritual</em></h1>
+  <div class="header-date" id="headerDate"></div>
+</header>
+
+<nav>
+  <button class="nav-tab active" onclick="switchTab('today')">Today</button>
+  <button class="nav-tab" onclick="switchTab('week')">This Week</button>
+  <button class="nav-tab" onclick="switchTab('log')">Log</button>
+  <button class="nav-tab" onclick="switchTab('timeline')">Timeline</button>
+  <button class="nav-tab" onclick="switchTab('ingredients')">Ingredients</button>
+</nav>
+
+<main>
+
+  <!-- TODAY PANEL -->
+  <div class="panel active" id="panel-today">
+
+    <div class="section-label">Wake-up Ritual</div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="m1">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Cold water rinse</div>
+        <div class="ritual-note">No cleanser in AM — preserves your barrier</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="m2">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Rose water toner</div>
+        <div class="ritual-note">Pat in, don't rub — your Biotique or plain rose water</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="m3">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Aloe vera gel — thin layer</div>
+        <div class="ritual-note">Wait 60 seconds before next step</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="m4">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Minimalist B12 moisturizer</div>
+        <div class="ritual-note">Extra layer on dry cheeks if needed</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="m5">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Plum sunscreen — face + neck + chest</div>
+        <div class="ritual-note">The most important step. Every day, even indoors.</div>
+      </div>
+      <span class="ritual-tag tag-neck">Neck</span>
+    </div>
+
+    <div class="section-label">Sleep Ritual</div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="e1">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Besan cleanser</div>
+        <div class="ritual-note">1 tsp besan + rose water to paste, gentle circles, rinse</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="e2" id="maskCard">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name" id="maskCardName">Tonight's mask</div>
+        <div class="ritual-note" id="maskCardNote">Loading...</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="ritual-card" onclick="toggleDone(this)" data-key="e3">
+      <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ritual-content">
+        <div class="ritual-name">Rose water + Aloe to finish</div>
+        <div class="ritual-note">Thin layer aloe as overnight treatment. Skip on mask nights — use B12 moisturizer instead.</div>
+      </div>
+      <span class="ritual-tag tag-face">Face</span>
+    </div>
+
+    <div class="section-label" id="bodyLabel">Body — Today</div>
+
+    <div id="bodyTasks"></div>
+
+    <p class="completion-line" id="completionLine"></p>
+
+    <div class="section-label" style="margin-top:28px;">Today's Notes</div>
+    <textarea id="todayNotes" placeholder="How does your skin feel today? Any observations..."></textarea>
+    <button class="save-btn" onclick="saveNotes()">Save Notes</button>
+  </div>
+
+  <!-- WEEK PANEL -->
+  <div class="panel" id="panel-week">
+
+    <div class="section-label">Week at a Glance</div>
+    <div class="week-grid" id="weekGrid"></div>
+
+    <div class="section-label">Evening Mask Schedule</div>
+    <div id="maskSchedule"></div>
+
+    <div class="section-label">Body Care Schedule</div>
+
+    <div class="mask-row">
+      <div class="mask-day-label">Mon</div>
+      <div class="mask-name">Coffee + Honey hand scrub</div>
+      <div class="mask-ingredients">coffee · honey · milk</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Tue</div>
+      <div class="mask-name">Neck milk + turmeric</div>
+      <div class="mask-ingredients">milk · turmeric</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Wed</div>
+      <div class="mask-name">Armpit — potato + lemon</div>
+      <div class="mask-ingredients">potato · lemon · honey</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Thu</div>
+      <div class="mask-name">Coffee + Honey hand scrub</div>
+      <div class="mask-ingredients">coffee · honey · milk</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Fri</div>
+      <div class="mask-name">Neck milk + turmeric</div>
+      <div class="mask-ingredients">milk · turmeric</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Sat</div>
+      <div class="mask-name">Armpit + Coffee hand scrub</div>
+      <div class="mask-ingredients">both body treatments</div>
+    </div>
+    <div class="mask-row">
+      <div class="mask-day-label">Sun</div>
+      <div class="mask-name">Rest day — body</div>
+      <div class="mask-ingredients">aloe only</div>
+    </div>
+  </div>
+
+  <!-- LOG PANEL -->
+  <div class="panel" id="panel-log">
+
+    <div class="section-label">Streak</div>
+    <div class="streak-display">
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">days<br>consistent</div>
+    </div>
+
+    <div class="section-label">Daily Completion</div>
+    <div id="completionLog"></div>
+
+    <div class="section-label">Photo Log</div>
+    <div class="photo-hint">
+      <strong>Monthly Comparison</strong>
+      Take one photo on the 1st of each month.<br>
+      Same light, same angle, same time of day.<br>
+      This is your real progress tracker.
+    </div>
+
+    <div class="section-label">Past Notes</div>
+    <div id="pastNotes"></div>
+  </div>
+
+  <!-- TIMELINE PANEL -->
+  <div class="panel" id="panel-timeline">
+    <div class="section-label">What to Expect</div>
+    <p style="font-size:11px; color:var(--muted); line-height:1.7; margin-bottom:20px;">Realistic timelines. SPF daily is the non-negotiable — without it, everything else is slower.</p>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Face brightness + glow</div>
+        <div class="timeline-time">4 – 6 weeks</div>
+        <div class="timeline-note">First visible change</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Laugh lines + eye pigmentation</div>
+        <div class="timeline-time">3 – 6 months</div>
+        <div class="timeline-note">Stubborn but responds to consistency</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Neck discoloration</div>
+        <div class="timeline-time">4 – 8 months</div>
+        <div class="timeline-note">Milk + turmeric 2x/week is key here</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Hand tan line</div>
+        <div class="timeline-time">6 – 12 months</div>
+        <div class="timeline-note">Coffee scrub + tomato + body SPF</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Armpit pigmentation</div>
+        <div class="timeline-time">6 – 18 months</div>
+        <div class="timeline-note">Slowest — reduce friction too</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-concern">Full even skin tone</div>
+        <div class="timeline-time">1 – 2 years</div>
+        <div class="timeline-note">The long game. Worth every day.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-label">Next Upgrade</div>
+    <div class="ingredient-key">
+      <h4>When you're ready</h4>
+      <div class="ingredient-row">
+        <span class="name">Minimalist Vitamin C serum</span>
+        <span class="use">After toner, before aloe</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Body SPF</span>
+        <span class="use">Hands when going out</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Niacinamide serum</span>
+        <span class="use">Later — for pore + oil control</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INGREDIENTS PANEL -->
+  <div class="panel" id="panel-ingredients">
+    <div class="section-label">Your Ingredient Arsenal</div>
+
+    <div class="ingredient-key">
+      <h4>What each ingredient does</h4>
+      <div class="ingredient-row">
+        <span class="name">Rose water</span>
+        <span class="use">Toner, pH balance, soothes</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Aloe vera gel</span>
+        <span class="use">Barrier repair, anti-inflam</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Honey</span>
+        <span class="use">Humectant, antimicrobial, glow</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Tomato</span>
+        <span class="use">Lycopene — fades pigmentation</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Milk</span>
+        <span class="use">Lactic acid — gentle resurface</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Turmeric</span>
+        <span class="use">Anti-inflam, brightens — PM only</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Coffee grounds</span>
+        <span class="use">Physical exfoliant — body only</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Lemon</span>
+        <span class="use">Acid — body only, never face</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Besan</span>
+        <span class="use">Gentle cleanser, removes dead skin</span>
+      </div>
+    </div>
+
+    <div class="section-label">What NOT to Mix</div>
+    <div class="ingredient-key">
+      <h4>Avoid these combinations</h4>
+      <div class="ingredient-row">
+        <span class="name">Lemon on face</span>
+        <span class="use" style="color:#e07070">Never — worsens pigmentation</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Turmeric in AM</span>
+        <span class="use" style="color:#e07070">Photosensitizes — PM only</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Coffee on face</span>
+        <span class="use" style="color:#e07070">Too harsh — body only</span>
+      </div>
+      <div class="ingredient-row">
+        <span class="name">Moisturizer after turmeric mask</span>
+        <span class="use" style="color:#e07070">Use B12 cream, not aloe on top</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = new Date();
+  const todayDow = today.getDay(); // 0=Sun
+
+  // Header date
+  document.getElementById('headerDate').textContent =
+    today.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Mask schedule: keyed by day of week (0=Sun)
+  const maskSchedule = {
+    0: { name: 'Rest night', note: 'Rose water + aloe + B12 moisturizer only', isRest: true },
+    1: { name: 'Honey + Tomato mask', note: 'Half tomato mashed + 1 tsp honey · 15–20 min · good for laugh lines', isRest: false },
+    2: { name: 'Honey + Tomato mask', note: 'Half tomato mashed + 1 tsp honey · 15–20 min', isRest: false },
+    3: { name: 'Rest night', note: 'Rose water + aloe + B12 moisturizer only', isRest: true },
+    4: { name: 'Milk + Honey mask', note: '1 tbsp raw milk + 1 tsp honey · 15 min · good for dry cheeks', isRest: false },
+    5: { name: 'Milk + Honey mask', note: '1 tbsp raw milk + 1 tsp honey · 15 min', isRest: false },
+    6: { name: 'Turmeric mask', note: '¼ tsp turmeric + 1 tsp honey + drops rose water · 10 min MAX · PM only', isRest: false }
+  };
+
+  // Body tasks per day of week
+  const bodySchedule = {
+    0: [],
+    1: [{ name: 'Coffee + Honey hand scrub', note: '1 tbsp coffee + 1 tsp honey + drops milk · scrub 2–3 min · follow with tomato juice on tan line' }],
+    2: [{ name: 'Neck — milk + turmeric', note: '1 tbsp milk + pinch turmeric · leave 15 min · rinse with cold water' }],
+    3: [{ name: 'Armpits — potato + lemon', note: 'Grate half potato + squeeze lemon · leave 15–20 min · rinse · follow with aloe' }],
+    4: [{ name: 'Coffee + Honey hand scrub', note: '1 tbsp coffee + 1 tsp honey + drops milk · scrub 2–3 min · follow with tomato juice' }],
+    5: [{ name: 'Neck — milk + turmeric', note: '1 tbsp milk + pinch turmeric · leave 15 min · rinse cold' }],
+    6: [
+      { name: 'Coffee + Honey hand scrub', note: '1 tbsp coffee + 1 tsp honey + drops milk · scrub 2–3 min · follow with tomato juice' },
+      { name: 'Armpits — potato + lemon', note: 'Grate half potato + squeeze lemon · leave 15–20 min · aloe after' }
+    ]
+  };
+
+  // Set today's mask card
+  const todayMask = maskSchedule[todayDow];
+  document.getElementById('maskCardName').textContent = todayMask.name;
+  document.getElementById('maskCardNote').textContent = todayMask.note;
+  if (todayMask.isRest) {
+    document.getElementById('maskCard').style.opacity = '0.6';
+  }
+
+  // Render body tasks
+  const bodyContainer = document.getElementById('bodyTasks');
+  const todayBody = bodySchedule[todayDow];
+  const bodyLabel = document.getElementById('bodyLabel');
+
+  if (todayBody.length === 0) {
+    bodyLabel.style.display = 'none';
+    bodyContainer.innerHTML = '';
+  } else {
+    todayBody.forEach((task, i) => {
+      const el = document.createElement('div');
+      el.className = 'ritual-card';
+      el.setAttribute('data-key', `b${i}`);
+      el.onclick = function() { toggleDone(this); };
+      el.innerHTML = `
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content">
+          <div class="ritual-name">${task.name}</div>
+          <div class="ritual-note">${task.note}</div>
+        </div>
+        <span class="ritual-tag tag-body">Body</span>
+      `;
+      bodyContainer.appendChild(el);
+    });
+  }
+
+  // Storage helpers
+  function getTodayKey() {
+    return today.toISOString().slice(0,10);
+  }
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem('skinRitual') || '{}'); } catch(e) { return {}; }
+  }
+
+  function saveState(state) {
+    localStorage.setItem('skinRitual', JSON.stringify(state));
+  }
+
+  // Toggle done
+  function toggleDone(el) {
+    el.classList.toggle('done');
+    updateCompletion();
+    saveDay();
+  }
+
+  function updateCompletion() {
+    const cards = document.querySelectorAll('#panel-today .ritual-card');
+    const done = document.querySelectorAll('#panel-today .ritual-card.done').length;
+    const total = cards.length;
+    const line = document.getElementById('completionLine');
+    if (done === 0) { line.textContent = ''; line.className = 'completion-line'; return; }
+    if (done === total) {
+      line.textContent = 'Ritual complete. Well done.';
+      line.className = 'completion-line complete';
+    } else {
+      line.textContent = `${done} of ${total} done`;
+      line.className = 'completion-line';
+    }
+  }
+
+  function saveDay() {
+    const state = loadState();
+    const key = getTodayKey();
+    const cards = document.querySelectorAll('#panel-today .ritual-card');
+    const done = [];
+    cards.forEach(c => { if (c.classList.contains('done')) done.push(c.dataset.key); });
+    if (!state[key]) state[key] = {};
+    state[key].done = done;
+    const total = cards.length;
+    state[key].pct = Math.round((done.length / total) * 100);
+    saveState(state);
+    updateStreak(state);
+  }
+
+  function updateStreak(state) {
+    let streak = 0;
+    const d = new Date();
+    for (let i = 0; i < 365; i++) {
+      const k = d.toISOString().slice(0,10);
+      if (state[k] && state[k].pct >= 80) { streak++; d.setDate(d.getDate()-1); }
+      else break;
+    }
+    document.getElementById('streakNum').textContent = streak;
+  }
+
+  // Load saved state
+  function loadDay() {
+    const state = loadState();
+    const key = getTodayKey();
+    if (state[key] && state[key].done) {
+      state[key].done.forEach(k => {
+        const el = document.querySelector(`[data-key="${k}"]`);
+        if (el) el.classList.add('done');
+      });
+    }
+    if (state[key] && state[key].notes) {
+      document.getElementById('todayNotes').value = state[key].notes;
+    }
+    updateCompletion();
+    updateStreak(state);
+  }
+
+  function saveNotes() {
+    const state = loadState();
+    const key = getTodayKey();
+    if (!state[key]) state[key] = {};
+    state[key].notes = document.getElementById('todayNotes').value;
+    saveState(state);
+    showToast('Notes saved');
+  }
+
+  // Week grid
+  function buildWeekGrid() {
+    const state = loadState();
+    const grid = document.getElementById('weekGrid');
+    grid.innerHTML = '';
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = d.toISOString().slice(0,10);
+      const dow = d.getDay();
+      const isToday = i === 0;
+      const pct = state[k] ? state[k].pct : 0;
+      const cell = document.createElement('div');
+      cell.className = 'day-cell' + (isToday ? ' today selected' : '') + (pct > 0 ? ' has-data' : '');
+      cell.innerHTML = `<span class="day-name">${DAYS[dow]}</span><span class="day-num">${d.getDate()}</span><div class="day-dot"></div>`;
+      grid.appendChild(cell);
+    }
+  }
+
+  // Mask schedule list
+  function buildMaskSchedule() {
+    const container = document.getElementById('maskSchedule');
+    container.innerHTML = '';
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    Object.entries(maskSchedule).forEach(([dow, m]) => {
+      const row = document.createElement('div');
+      row.className = 'mask-row';
+      row.innerHTML = `
+        <div class="mask-day-label">${dayNames[dow]}</div>
+        <div class="mask-name">${m.name}</div>
+        <div class="mask-ingredients">${m.isRest ? 'rest' : m.note.split('·')[0].trim()}</div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  // Completion log
+  function buildLog() {
+    const state = loadState();
+    const container = document.getElementById('completionLog');
+    container.innerHTML = '';
+    const notes = document.getElementById('pastNotes');
+    notes.innerHTML = '';
+    const keys = Object.keys(state).sort().reverse().slice(0,14);
+    if (keys.length === 0) {
+      container.innerHTML = '<p style="font-size:11px;color:var(--muted);padding:8px 0;">No data yet. Complete today\'s ritual to start.</p>';
+      return;
+    }
+    keys.forEach(k => {
+      const entry = state[k];
+      const pct = entry.pct || 0;
+      const d = new Date(k);
+      const label = d.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' });
+      const wrap = document.createElement('div');
+      wrap.className = 'progress-area';
+      wrap.innerHTML = `
+        <div class="progress-label">${label}</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="progress-meta"><span>${pct}% complete</span><span style="color:${pct>=80?'var(--crimson-bright)':'var(--muted)'}">${pct>=80?'✓ Consistent':pct>0?'Partial':'—'}</span></div>
+      `;
+      container.appendChild(wrap);
+
+      if (entry.notes) {
+        const n = document.createElement('div');
+        n.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:2px;padding:12px 14px;margin-bottom:8px;';
+        n.innerHTML = `<div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--silver-dim);margin-bottom:6px;">${label}</div><div style="font-size:12px;color:var(--silver);line-height:1.6;">${entry.notes}</div>`;
+        notes.appendChild(n);
+      }
+    });
+  }
+
+  // Tab switching
+  function switchTab(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'week') { buildWeekGrid(); buildMaskSchedule(); }
+    if (name === 'log') { buildLog(); }
+  }
+
+  // Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  // Init
+  loadDay();
+</script>
+</body>
+</html>
