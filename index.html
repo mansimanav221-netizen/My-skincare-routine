@@ -456,6 +456,21 @@
   .ingredient-row:last-child { border-bottom: none; }
   .ingredient-row .name { color: var(--white); }
   .ingredient-row .use { color: var(--muted); font-size: 10px; }
+
+  .pct-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--silver);
+    padding: 8px 4px;
+    font-size: 11px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .pct-btn:hover { border-color: var(--silver-dim); color: var(--white); }
+  .pct-btn.selected { background: var(--crimson-glow); border-color: var(--crimson-bright); color: var(--white); }
 </style>
 </head>
 <body>
@@ -521,7 +536,7 @@
       <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="ritual-content">
         <div class="ritual-name">Plum sunscreen — face + neck + chest</div>
-        <div class="ritual-note">The most important step. Every day, even indoors.</div>
+        <div class="ritual-note">Still essential — afternoon UV + screen light. Every single day.</div>
       </div>
       <span class="ritual-tag tag-neck">Neck</span>
     </div>
@@ -621,6 +636,22 @@
     <div class="streak-display">
       <div class="streak-num" id="streakNum">0</div>
       <div class="streak-label">days<br>consistent</div>
+    </div>
+
+    <div class="section-label">Log a Past Day</div>
+    <div class="progress-area" style="margin-bottom:16px;">
+      <div style="margin-bottom:10px;">
+        <input type="date" id="backlogDate" style="background:var(--deep);border:1px solid var(--border);color:var(--white);padding:8px 10px;font-family:Inter,sans-serif;font-size:12px;border-radius:2px;width:100%;outline:none;" />
+      </div>
+      <div style="font-size:11px;color:var(--silver-dim);margin-bottom:10px;">How much of the ritual did you complete that day?</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;" id="pctButtons">
+        <button onclick="selectPct(25)" class="pct-btn" data-pct="25">25%</button>
+        <button onclick="selectPct(50)" class="pct-btn" data-pct="50">50%</button>
+        <button onclick="selectPct(75)" class="pct-btn" data-pct="75">75%</button>
+        <button onclick="selectPct(100)" class="pct-btn" data-pct="100">100%</button>
+      </div>
+      <textarea id="backlogNotes" placeholder="Any notes for that day... (optional)" style="margin-bottom:10px;min-height:60px;"></textarea>
+      <button class="save-btn" onclick="saveBacklog()" style="margin-top:0;">Save to Log</button>
     </div>
 
     <div class="section-label">Daily Completion</div>
@@ -1026,6 +1057,44 @@
 
   // Init
   loadDay();
+
+  // Backlog
+  let selectedPct = 100;
+
+  // Set default date to yesterday
+  (function() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    const el = document.getElementById('backlogDate');
+    if (el) el.value = d.toISOString().slice(0,10);
+  })();
+
+  function selectPct(pct) {
+    selectedPct = pct;
+    document.querySelectorAll('.pct-btn').forEach(b => {
+      b.classList.toggle('selected', parseInt(b.dataset.pct) === pct);
+    });
+  }
+
+  function saveBacklog() {
+    const dateEl = document.getElementById('backlogDate');
+    const notesEl = document.getElementById('backlogNotes');
+    const key = dateEl ? dateEl.value : '';
+    if (!key) { showToast('Pick a date first'); return; }
+    const state = loadState();
+    if (!state[key]) state[key] = {};
+    state[key].pct = selectedPct;
+    if (notesEl && notesEl.value) state[key].notes = notesEl.value;
+    saveState(state);
+    updateStreak(state);
+    buildLog();
+    showToast('Logged for ' + key);
+    if (notesEl) notesEl.value = '';
+    // reset selection
+    document.querySelectorAll('.pct-btn').forEach(b => b.classList.remove('selected'));
+    selectedPct = 100;
+  }
+
 </script>
 </body>
 </html>
