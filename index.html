@@ -494,6 +494,16 @@
   <!-- TODAY PANEL -->
   <div class="panel active" id="panel-today">
 
+    <!-- MODE TOGGLE -->
+    <div id="modeToggleBar" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:2px;padding:12px 16px;margin-bottom:20px;">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--silver-dim);margin-bottom:3px;">Location</div>
+        <div style="font-size:13px;color:var(--white);" id="modeLabel">Home</div>
+      </div>
+      <button onclick="toggleMode()" id="modeBtn" style="background:var(--deep);border:1px solid var(--border);color:var(--silver);padding:8px 14px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;border-radius:2px;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.2s;">Switch to Mum's</button>
+    </div>
+
+    <div id="homeRoutine">
     <div class="section-label">Wake-up Ritual</div>
 
     <div class="ritual-card" onclick="toggleDone(this)" data-key="m1">
@@ -573,6 +583,80 @@
     <div class="section-label" id="bodyLabel">Body — Today</div>
 
     <div id="bodyTasks"></div>
+    </div><!-- end homeRoutine -->
+
+    <!-- MUMS ROUTINE -->
+    <div id="momsRoutine" style="display:none;">
+      <div style="background:rgba(80,50,10,0.2);border:1px solid rgba(180,120,30,0.3);border-radius:2px;padding:12px 16px;margin-bottom:20px;">
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#c8a040;margin-bottom:4px;">Mum's Place Mode</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">Simplified routine. Core steps intact, body treatments paused. Still consistent.</div>
+      </div>
+
+      <div class="section-label">Wake-up Ritual</div>
+
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="mm1">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Cold water rinse</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="mm2">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Rose water toner</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="mm3">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Aloe vera gel</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="mm4">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Minimalist B12 moisturizer</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="mm5">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Sunscreen — face + neck + chest</div></div>
+        <span class="ritual-tag tag-neck">Neck</span>
+      </div>
+
+      <div class="section-label">Sleep Ritual</div>
+
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="ms1">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Besan cleanser</div><div class="ritual-note">1 tsp besan + rose water to paste</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="ms2" id="momsMaskCard">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content">
+          <div class="ritual-name" id="momsMaskName">Tonight's mask</div>
+          <div class="ritual-note" id="momsMaskNote">Loading...</div>
+        </div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="ms3">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">Vitamin C capsule</div><div class="ritual-note">Prick, pat on face, let absorb</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+      <div class="ritual-card" onclick="toggleDone(this)" data-key="ms4">
+        <div class="ritual-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ritual-content"><div class="ritual-name">B12 moisturizer to finish</div></div>
+        <span class="ritual-tag tag-face">Face</span>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:2px;padding:12px 16px;margin-top:16px;">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--silver-dim);margin-bottom:8px;">Paused this week</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9;">
+          ✗ &nbsp;Coffee hand scrub<br>
+          ✗ &nbsp;Tomato juice on tan line<br>
+          ✗ &nbsp;Armpit potato + lemon<br>
+          ✗ &nbsp;Neck milk + turmeric<br>
+          ✗ &nbsp;DermDoc underarm spray
+        </div>
+      </div>
+    </div><!-- end momsRoutine -->
 
     <p class="completion-line" id="completionLine"></p>
 
@@ -1093,6 +1177,52 @@
     // reset selection
     document.querySelectorAll('.pct-btn').forEach(b => b.classList.remove('selected'));
     selectedPct = 100;
+  }
+
+
+  // Mum's place mask schedule (by day of week)
+  const momsMaskSchedule = {
+    0: { name: 'Rest night', note: 'Rose water + aloe + B12 only', isRest: true },
+    1: { name: 'Honey + Turmeric mask', note: '1 tsp honey + tiny pinch turmeric + drops rose water · 10 min · PM only', isRest: false },
+    2: { name: 'Saffron + Milk mask', note: '4–5 saffron strands soaked in 1 tbsp milk · leave 15 min · rinse', isRest: false },
+    3: { name: 'Rest night', note: 'Rose water + aloe + B12 only', isRest: true },
+    4: { name: 'Saffron + Honey mask', note: 'Saffron strands soaked in rose water + 1 tsp honey · leave 15 min', isRest: false },
+    5: { name: 'Honey + Turmeric mask', note: '1 tsp honey + tiny pinch turmeric + drops rose water · 10 min · PM only', isRest: false },
+    6: { name: 'Saffron + Turmeric + Honey', note: 'Saffron in rose water + pinch turmeric + honey · most powerful · sleep ritual only', isRest: false }
+  };
+
+  // Set mums mask card
+  const momsMask = momsMaskSchedule[todayDow];
+  document.getElementById('momsMaskName').textContent = momsMask.name;
+  document.getElementById('momsMaskNote').textContent = momsMask.note;
+
+  // Mode toggle
+  let isMomsMode = false;
+
+  function toggleMode() {
+    isMomsMode = !isMomsMode;
+    const homeEl = document.getElementById('homeRoutine');
+    const momsEl = document.getElementById('momsRoutine');
+    const label = document.getElementById('modeLabel');
+    const btn = document.getElementById('modeBtn');
+
+    if (isMomsMode) {
+      homeEl.style.display = 'none';
+      momsEl.style.display = 'block';
+      label.textContent = "Mum's Place";
+      label.style.color = '#c8a040';
+      btn.textContent = 'Switch to Home';
+      btn.style.borderColor = 'rgba(180,120,30,0.4)';
+      btn.style.color = '#c8a040';
+    } else {
+      homeEl.style.display = 'block';
+      momsEl.style.display = 'none';
+      label.textContent = 'Home';
+      label.style.color = 'var(--white)';
+      btn.textContent = "Switch to Mum's";
+      btn.style.borderColor = 'var(--border)';
+      btn.style.color = 'var(--silver)';
+    }
   }
 
 </script>
