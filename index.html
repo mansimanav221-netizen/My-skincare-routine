@@ -658,6 +658,17 @@
       </div>
     </div><!-- end momsRoutine -->
 
+    <!-- VITAMIN C REMINDER -->
+    <div id="vitCReminder" style="background:rgba(20,40,20,0.3);border:1px solid rgba(60,120,60,0.3);border-radius:2px;padding:12px 16px;margin-bottom:8px;margin-top:4px;">
+      <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#70b070;margin-bottom:4px;">Coming in 1 week</div>
+      <div style="font-size:12px;color:var(--silver);">Vitamin C capsule — sleep ritual</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;">After rose water, before aloe · alternate nights first · introduce once purging clears</div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:10px;color:var(--muted);" id="vitCCountdown"></div>
+        <button onclick="activateVitC()" id="vitCBtn" style="background:rgba(60,120,60,0.2);border:1px solid rgba(60,120,60,0.4);color:#70b070;padding:6px 12px;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;border-radius:2px;cursor:pointer;font-family:Inter,sans-serif;">Mark as Started</button>
+      </div>
+    </div>
+
     <p class="completion-line" id="completionLine"></p>
 
     <div class="section-label" style="margin-top:28px;">Today's Notes</div>
@@ -907,13 +918,13 @@
 
   // Mask schedule: keyed by day of week (0=Sun)
   const maskSchedule = {
-    0: { name: 'Rest night', note: 'Rose water + aloe + B12 moisturizer only', isRest: true },
+    0: { name: 'Saffron + Turmeric + Honey', note: 'Saffron soaked in rose water + pinch turmeric + 1 tsp honey · 10 min · sleep ritual only · most powerful', isRest: false },
     1: { name: 'Honey + Tomato mask', note: 'Half tomato mashed + 1 tsp honey · 15–20 min · good for laugh lines', isRest: false },
-    2: { name: 'Honey + Tomato mask', note: 'Half tomato mashed + 1 tsp honey · 15–20 min', isRest: false },
+    2: { name: 'Saffron + Milk mask', note: '4–5 saffron strands soaked in 1 tbsp milk · leave 15 min · rinse · brightening', isRest: false },
     3: { name: 'Rest night', note: 'Rose water + aloe + B12 moisturizer only', isRest: true },
-    4: { name: 'Milk + Honey mask', note: '1 tbsp raw milk + 1 tsp honey · 15 min · good for dry cheeks', isRest: false },
-    5: { name: 'Milk + Honey mask', note: '1 tbsp raw milk + 1 tsp honey · 15 min', isRest: false },
-    6: { name: 'Turmeric mask', note: '¼ tsp turmeric + 1 tsp honey + drops rose water · 10 min MAX · PM only', isRest: false }
+    4: { name: 'Milk + Multani Mitti mask', note: '1 tbsp multani mitti + enough milk to paste · 10–12 min · T-zone and neck · avoid dry cheeks', isRest: false },
+    5: { name: 'Saffron + Honey mask', note: 'Saffron strands soaked in rose water + 1 tsp honey · 15 min · all over face', isRest: false },
+    6: { name: 'Rest night', note: 'Rose water + aloe + B12 moisturizer only', isRest: true }
   };
 
   // Body tasks per day of week
@@ -1223,6 +1234,40 @@
       btn.style.borderColor = 'var(--border)';
       btn.style.color = 'var(--silver)';
     }
+  }
+
+
+  // Vitamin C countdown
+  (function() {
+    const state = loadState();
+    const startDate = new Date('2025-07-15'); // approx routine start — adjust if needed
+    const vitCDate = new Date(startDate);
+    vitCDate.setDate(vitCDate.getDate() + 22); // 15 days consistent + 1 week wait
+    const now = new Date();
+    const diff = Math.ceil((vitCDate - now) / (1000 * 60 * 60 * 24));
+    const el = document.getElementById('vitCCountdown');
+    const btn = document.getElementById('vitCBtn');
+    if (state.vitCActive) {
+      document.getElementById('vitCReminder').style.background = 'rgba(20,60,20,0.4)';
+      document.getElementById('vitCReminder').style.borderColor = 'rgba(60,150,60,0.4)';
+      if (el) el.textContent = 'Active — alternate sleep ritual nights';
+      if (btn) { btn.textContent = 'Active ✓'; btn.style.background = 'rgba(60,150,60,0.3)'; }
+    } else if (diff > 0) {
+      if (el) el.textContent = diff + ' days to go';
+    } else {
+      if (el) el.textContent = 'Ready to introduce!';
+      if (btn) btn.style.borderColor = 'rgba(100,180,100,0.6)';
+    }
+  })();
+
+  function activateVitC() {
+    const state = loadState();
+    state.vitCActive = true;
+    saveState(state);
+    document.getElementById('vitCBtn').textContent = 'Active ✓';
+    document.getElementById('vitCCountdown').textContent = 'Active — alternate sleep ritual nights';
+    document.getElementById('vitCReminder').style.background = 'rgba(20,60,20,0.4)';
+    showToast('Vitamin C added to routine');
   }
 
 </script>
